@@ -4,17 +4,14 @@
 # @Project : Deep-Learning-Utils
 # @File    : parallel.py
 
-"""
-Provide a IterableParallel class to run in parallel.
-The API is similar to joblib, but the parallel running is based on torch dataloader.
-The class return an iterator in order to solve the **inefficient memory** when the output (return data) is very large.
-"""
 
-__all__ = ["delayed", "IterableParallel"]
+__all__ = ["delayed", "IterableParallel", "tqdm_joblib"]
 
 from tqdm import tqdm
 from torch.utils.data import Dataset, DataLoader
 from typing import *
+import contextlib
+import joblib
 
 
 class _ThreadDataset(Dataset):
@@ -40,6 +37,12 @@ class delayed:
 
 
 class IterableParallel:
+    """
+    Run in parallel.
+    The API is similar to joblib, but the parallel running is based on torch dataloader.
+    The class return an iterator in order to solve the **inefficient memory** when the output (return data) is very large.
+    """
+
     def __init__(self, n_jobs=1, prefetch_factor=2, batch_size=1, timeout=0,
                  verbose=False, verbose_bar_desc=None):
         self.n_jobs = n_jobs
@@ -69,3 +72,24 @@ class IterableParallel:
             for element in processing_output:
                 bar.update(1)
                 yield element
+
+
+@contextlib.contextmanager
+def tqdm_joblib(tqdm_object: tqdm):
+    """
+    Context manager to patch joblib to report into tqdm progress bar given as argument.
+    Copied from https://stackoverflow.com/questions/24983493/tracking-progress-of-joblib-parallel-execution.
+    """
+
+    class TqdmBatchCompletionCallback(joblib.parallel.BatchCompletionCallBack):
+        def __call__(self, *args, **kwargs):
+            tqdm_object.update(n=self.batch_size)
+            return super().__call__(*args, **kwargs)
+
+    old_batch_callback = joblib.parallel.BatchCompletionCallBack
+    joblib.parallel.BatchCompletionCallBack = TqdmBatchCompletionCallback
+    try:
+        yield tqdm_object
+    finally:
+        joblib.parallel.BatchCompletionCallBack = old_batch_callback
+        tqdm_object.close()
