@@ -5,6 +5,6 @@
 # @File    : __init__.py
 
 
-from . import parallel, video, visualize
+from . import parallel, image, video, visualize
 
-__all__ = ["parallel", "video", "video", "visualize"]
+__all__ = ["parallel", "image", "video", "video", "visualize"]

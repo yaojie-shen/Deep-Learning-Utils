@@ -18,8 +18,11 @@ setup(
     python_requires='>=3.7.0',
     install_requires=[
         "numpy",
+        "joblib",
+        "tqdm",
         "matplotlib",
         "setuptools",
-        "opencv-python"
+        "opencv-python",
+        "torch"
     ],
 )

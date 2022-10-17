@@ -9,7 +9,7 @@ import numpy as np
 from dl_utils.visualize import *
 
 
-class TestPlot(unittest.TestCase):
+class TestVisualize(unittest.TestCase):
 
     def test_plot_distribution(self):
         # generate random data

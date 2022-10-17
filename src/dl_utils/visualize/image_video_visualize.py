@@ -11,6 +11,7 @@ import numpy as np
 import torch
 
 import matplotlib.pyplot as plt
+from PIL import Image
 
 from torchvision.transforms.functional import normalize
 
@@ -21,6 +22,8 @@ def _convert_to_numpy_array(data):
         pass
     elif isinstance(data, torch.Tensor):
         data = data.detach().cpu().numpy()
+    elif isinstance(data, Image.Image):
+        data = np.array(data)
     else:
         raise ValueError("Data type is not supported to convert to numpy array: {}".format(type(data)))
     return data
