@@ -1,5 +1,8 @@
 numpy
+joblib
+tqdm
 matplotlib
 setuptools
 opencv-python
-joblib
+torch
+tabulate

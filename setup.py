@@ -23,6 +23,7 @@ setup(
         "matplotlib",
         "setuptools",
         "opencv-python",
-        "torch"
+        "torch",
+        "tabulate"
     ],
 )
