@@ -83,8 +83,9 @@ def _backend_opencv(image, display="localhost:10.0"):
 
 def _backend_save_image(image, path=None):
     if path is None:
-        raise ValueError("path should not be None, add it to  **backend_args")
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+        raise ValueError("kwargs 'path' should not be None, add it to  **backend_args")
+    if os.path.dirname(path):
+        os.makedirs(os.path.dirname(path), exist_ok=True)
     plt.imsave(path, image)
 
 

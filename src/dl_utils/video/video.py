@@ -4,11 +4,12 @@
 # @Project : Deep-Learning-Utils
 # @File    : video.py
 
-__all__ = ["get_duration_info"]
+__all__ = ["get_duration_info", "convert_to_h265"]
 
 from typing import *
 
 import os
+import subprocess
 from joblib import Parallel, delayed
 
 
@@ -40,3 +41,37 @@ def get_duration_info(video_paths: Union[str, Iterable]) -> (float, float, int):
         return Parallel(n_jobs=os.cpu_count())(
             delayed(_get_single_video_duration_info)(path) for path in video_paths
         )
+
+
+def convert_to_h265(input_file: AnyStr, output_file: AnyStr,
+                    ffmpeg_exec: AnyStr = "/usr/bin/ffmpeg",
+                    keyint: int = None,
+                    overwrite: bool = False,
+                    verbose: bool = False) -> None:
+    """
+    convert video to h265 format using ffmpeg
+    @param input_file: input path
+    @param output_file: output path
+    @param ffmpeg_exec:
+    @param keyint:
+    @param overwrite: overwrite the existing file
+    @param verbose: show ffmpeg output
+    """
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+    # `-max_muxing_queue_size 9999` is for the problem reported in:
+    # https://stackoverflow.com/questions/49686244/ffmpeg-too-many-packets-buffered-for-output-stream-01
+    # <!> This may cause OOM error.
+    if keyint is None:
+        command = [ffmpeg_exec, "-i", f"{input_file}", "-max_muxing_queue_size", "9999",
+                   "-c:v", "libx265", "-vtag", "hvc1",
+                   "-c:a", "copy", "-movflags", "faststart", f"{output_file}"]
+    else:
+        command = [ffmpeg_exec, "-i", f"{input_file}", "-max_muxing_queue_size", "9999",
+                   "-c:v", "libx265", "-vtag", "hvc1", "-x265-params", "keyint=10",
+                   "-c:a", "copy", "-movflags", "faststart", f"{output_file}"]
+    if overwrite:
+        command += ["-y"]
+    subprocess.run(command,
+                   stderr=subprocess.DEVNULL if not verbose else None,
+                   stdout=subprocess.DEVNULL if not verbose else None)
+    # TODO: return
