@@ -15,9 +15,9 @@ def byte_imread(data):
     return Image.open(BytesIO(data))
 
 
-def byte_imwrite(image):
+def byte_imwrite(image, quality=100, subsampling=0):
     image = Image.fromarray(image)
     with BytesIO() as f:
-        image.save(f, format="JPEG")
+        image.save(f, format="JPEG", quality=quality, subsampling=subsampling)
         data = f.getvalue()
     return data
