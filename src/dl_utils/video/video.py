@@ -4,7 +4,7 @@
 # @Project : Deep-Learning-Utils
 # @File    : video.py
 
-__all__ = ["get_duration_info", "convert_to_h265"]
+__all__ = ["get_duration_info", "convert_to_h265", "convert_to_h264"]
 
 from typing import *
 
@@ -67,10 +67,37 @@ def convert_to_h265(input_file: AnyStr, output_file: AnyStr,
                    "-c:a", "copy", "-movflags", "faststart", f"{output_file}"]
     else:
         command = [ffmpeg_exec, "-i", f"{input_file}", "-max_muxing_queue_size", "9999",
-                   "-c:v", "libx265", "-vtag", "hvc1", "-x265-params", "keyint=10",
+                   "-c:v", "libx265", "-vtag", "hvc1", "-x265-params", f"keyint={keyint}",
                    "-c:a", "copy", "-movflags", "faststart", f"{output_file}"]
     if overwrite:
         command += ["-y"]
+    else:
+        command += ["-n"]
+    subprocess.run(command,
+                   stderr=subprocess.DEVNULL if not verbose else None,
+                   stdout=subprocess.DEVNULL if not verbose else None)
+    # TODO: return
+
+
+def convert_to_h264(input_file: AnyStr, output_file: AnyStr,
+                    ffmpeg_exec: AnyStr = "/usr/bin/ffmpeg",
+                    keyint: int = None,
+                    overwrite: bool = False,
+                    verbose: bool = False) -> None:
+    os.makedirs(os.path.dirname(output_file), exist_ok=True)
+
+    if keyint is None:
+        command = [ffmpeg_exec, "-i", f"{input_file}", "-max_muxing_queue_size", "9999",
+                   "-c:v", "libx264",
+                   "-c:a", "copy", "-movflags", "faststart", f"{output_file}"]
+    else:
+        command = [ffmpeg_exec, "-i", f"{input_file}", "-max_muxing_queue_size", "9999",
+                   "-c:v", "libx264", "-x264-params", f"keyint={keyint}",
+                   "-c:a", "copy", "-movflags", "faststart", f"{output_file}"]
+    if overwrite:
+        command += ["-y"]
+    else:
+        command += ["-n"]
     subprocess.run(command,
                    stderr=subprocess.DEVNULL if not verbose else None,
                    stdout=subprocess.DEVNULL if not verbose else None)
