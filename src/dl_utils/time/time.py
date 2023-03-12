@@ -55,7 +55,7 @@ class Timer:
     def reset(self):
         if self._synchronize:
             torch.cuda.synchronize(torch.cuda.current_device())
-        self._time = time.time()
+        self._time = self._get_time()
 
     def __str__(self):
         return str(self.get_info())

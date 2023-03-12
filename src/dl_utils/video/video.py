@@ -4,7 +4,7 @@
 # @Project : Deep-Learning-Utils
 # @File    : video.py
 
-__all__ = ["get_duration_info", "convert_to_h265", "convert_to_h264"]
+__all__ = ["get_duration_info", "convert_video"]
 
 from typing import *
 
@@ -43,57 +43,56 @@ def get_duration_info(video_paths: Union[str, Iterable]) -> (float, float, int):
         )
 
 
-def convert_to_h265(input_file: AnyStr, output_file: AnyStr,
-                    ffmpeg_exec: AnyStr = "/usr/bin/ffmpeg",
-                    keyint: int = None,
-                    overwrite: bool = False,
-                    verbose: bool = False) -> None:
+def convert_video(input_file: AnyStr, output_file: AnyStr,
+                  ffmpeg_exec: AnyStr = "/usr/bin/ffmpeg",
+                  codec="libx264",
+                  keyint: int = None,
+                  overwrite: bool = False,
+                  verbose: bool = False,
+                  resize: tuple = None) -> None:
     """
-    convert video to h265 format using ffmpeg
-    @param input_file: input path
-    @param output_file: output path
-    @param ffmpeg_exec:
-    @param keyint:
-    @param overwrite: overwrite the existing file
-    @param verbose: show ffmpeg output
+    :param input_file:
+    :param output_file:
+    :param ffmpeg_exec:
+    :param codec: supported video codec, e.g., libx264 and libx265
+    :param keyint:
+    :param overwrite:
+    :param verbose:
+    :param resize:
     """
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
-    # `-max_muxing_queue_size 9999` is for the problem reported in:
-    # https://stackoverflow.com/questions/49686244/ffmpeg-too-many-packets-buffered-for-output-stream-01
-    # <!> This may cause OOM error.
-    if keyint is None:
-        command = [ffmpeg_exec, "-i", f"{input_file}", "-max_muxing_queue_size", "9999",
-                   "-c:v", "libx265", "-vtag", "hvc1",
-                   "-c:a", "copy", "-movflags", "faststart", f"{output_file}"]
-    else:
-        command = [ffmpeg_exec, "-i", f"{input_file}", "-max_muxing_queue_size", "9999",
-                   "-c:v", "libx265", "-vtag", "hvc1", "-x265-params", f"keyint={keyint}",
-                   "-c:a", "copy", "-movflags", "faststart", f"{output_file}"]
-    if overwrite:
-        command += ["-y"]
-    else:
-        command += ["-n"]
-    subprocess.run(command,
-                   stderr=subprocess.DEVNULL if not verbose else None,
-                   stdout=subprocess.DEVNULL if not verbose else None)
-    # TODO: return
+    assert codec is None or codec in ["libx264", "libx265"], "Video codec {} is not supported.".format(codec)
+    assert keyint is None or codec is not None, "Codec must be specified if keyint is not None."
 
-
-def convert_to_h264(input_file: AnyStr, output_file: AnyStr,
-                    ffmpeg_exec: AnyStr = "/usr/bin/ffmpeg",
-                    keyint: int = None,
-                    overwrite: bool = False,
-                    verbose: bool = False) -> None:
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
-    if keyint is None:
-        command = [ffmpeg_exec, "-i", f"{input_file}", "-max_muxing_queue_size", "9999",
-                   "-c:v", "libx264",
-                   "-c:a", "copy", "-movflags", "faststart", f"{output_file}"]
-    else:
-        command = [ffmpeg_exec, "-i", f"{input_file}", "-max_muxing_queue_size", "9999",
-                   "-c:v", "libx264", "-x264-params", f"keyint={keyint}",
-                   "-c:a", "copy", "-movflags", "faststart", f"{output_file}"]
+    command = [ffmpeg_exec, "-i", f"{input_file}", "-max_muxing_queue_size", "9999"]
+    if codec is not None:
+        # use specified codec
+        command += ["-c:v", codec]
+        if codec == "libx265":
+            command += ["-vtag", "hvc1"]
+        if keyint is not None and codec == "libx264":
+            command += ["-x264-params", f"keyint={keyint}"]
+        elif keyint is not None and codec == "libx265":
+            command += ["-x265-params", f"keyint={keyint}"]
+    if resize is not None:
+        if isinstance(resize, int):  # resize height
+            assert resize % 2 == 0, "size is not divisible by 2"
+            # command += ["-vf", f"scale=trunc(oh*a/2)*2:{resize}"]
+            command += [
+                "-vf",
+                f"scale='if(gt(ih,iw),{resize},trunc(oh*a/2)*2)':'if(gt(ih, iw),trunc(ow/a/2)*2,{resize})'"
+            ]
+            # "'if(gt(ih,iw),240,trunc(oh*a/2)*2)':'if(gt(ih, iw),trunc(ow/a/2)*2,240)'"
+            # command += ["-vf", f'scale={resize}:{resize}:force_original_aspect_ratio=increase']
+        elif (isinstance(resize, type) or isinstance(resize, list)) and len(resize) == 2:
+            assert isinstance(resize[0], int) and isinstance(resize[1], int), "size should be int"
+            assert resize[0] % 2 == 0 and resize[1] % 2 == 0, "size is not divisible by 2"
+            command += ["-vf", f"scale={resize[0]}:{resize[1]}"]
+        else:
+            raise ValueError("size is not supported: {}".format(resize))
+    command += ["-c:a", "copy", "-movflags", "faststart", f"{output_file}"]
+
     if overwrite:
         command += ["-y"]
     else:
