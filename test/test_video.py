@@ -7,7 +7,7 @@
 import unittest
 import os
 
-from dl_utils.video import get_duration_info
+from dl_utils.data.video import get_duration_info
 
 
 class TestVideo(unittest.TestCase):

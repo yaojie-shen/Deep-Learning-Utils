@@ -4,7 +4,6 @@
 # @Project : Deep-Learning-Utils
 # @File    : __init__.py
 
+__all__ = ["cuda", "data", "parallel", "time", "visualize"]
 
-from . import parallel, image, video, visualize, time
-
-__all__ = ["parallel", "image", "video", "video", "visualize", "time"]
+from . import cuda, data, parallel, time, visualize

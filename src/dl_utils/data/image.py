@@ -2,7 +2,7 @@
 # @Time    : 2022/10/17 22:33
 # @Author  : Yaojie Shen
 # @Project : Deep-Learning-Utils
-# @File    : serialization.py
+# @File    : image.py
 
 
 from PIL import Image

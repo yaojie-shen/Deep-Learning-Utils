@@ -6,14 +6,14 @@
 
 import unittest
 import numpy as np
-from dl_utils.image import *
+from dl_utils.data.image import *
 from dl_utils.visualize import visualize_image
 
 
 class TestImage(unittest.TestCase):
 
     def test_byte_imread_imwrite(self):
-        image = np.random.randint(0, 255, (224, 224, 3), dtype=np.uint8)
+        image = np.random.randint(0, 255, (32, 32, 3), dtype=np.uint8)
         data = byte_imwrite(image)
         image_recover = byte_imread(data)
         visualize_image(image_recover)

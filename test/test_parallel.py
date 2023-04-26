@@ -15,4 +15,4 @@ import time
 class TestParallel(unittest.TestCase):
     def test_tqdm_joblib(self):
         with tqdm_joblib(total=10, disable=False):
-            joblib.Parallel(n_jobs=2)([joblib.delayed(time.sleep)(1) for _ in range(100)])
+            joblib.Parallel(n_jobs=2)(joblib.delayed(time.sleep)(1) for _ in range(10))
