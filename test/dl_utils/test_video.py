@@ -4,10 +4,10 @@
 # @Project : Deep-Learning-Utils
 # @File    : test_video.py
 
-import unittest
 import os
+import unittest
 
-from dl_utils.data.video import get_duration_info
+from dl_utils import get_duration_info
 
 
 class TestVideo(unittest.TestCase):

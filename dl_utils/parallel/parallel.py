@@ -7,11 +7,12 @@
 
 __all__ = ["delayed", "IterableParallel", "tqdm_joblib"]
 
-from tqdm import tqdm
-from torch.utils.data import Dataset, DataLoader
-from typing import *
 import contextlib
+from typing import *
+
 import joblib
+from torch.utils.data import Dataset, DataLoader
+from tqdm import tqdm
 
 
 class _ThreadDataset(Dataset):

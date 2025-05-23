@@ -6,6 +6,6 @@
 
 
 from .image import *
-from .video import *
 from .json import *
 from .lmdb import *
+from .video import *

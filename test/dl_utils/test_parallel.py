@@ -4,12 +4,12 @@
 # @Project : Deep-Learning-Utils
 # @File    : test_parallel.py
 
+import time
 import unittest
 
-from dl_utils.parallel import tqdm_joblib
-
 import joblib
-import time
+
+from dl_utils import tqdm_joblib
 
 
 class TestParallel(unittest.TestCase):

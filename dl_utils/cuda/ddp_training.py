@@ -7,15 +7,15 @@
 
 __all__ = ["gather_object_multiple_gpu"]
 
-import torch
-import torch.distributed as dist
+import hashlib
 import itertools
 import os
-import time
 import pickle
-import hashlib
-
+import time
 from typing import List, Any, AnyStr
+
+import torch
+import torch.distributed as dist
 
 
 def gather_object_multiple_gpu(list_object: List[Any], backend: AnyStr = "nccl",

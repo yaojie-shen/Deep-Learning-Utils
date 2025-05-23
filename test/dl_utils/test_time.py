@@ -4,10 +4,10 @@
 # @Project : Deep-Learning-Utils
 # @File    : test_time.py
 
-import unittest
-from dl_utils.time import *
-
 import time
+import unittest
+
+from dl_utils import *
 
 
 class TestTime(unittest.TestCase):

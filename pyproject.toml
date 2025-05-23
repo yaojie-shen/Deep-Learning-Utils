@@ -1,0 +1,42 @@
+[project]
+name = "dl-utils"
+version = "0.0.2"
+description = ""
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.7"
+authors = [{ name = "Yaojie Shen", email = "syj.micro@outlook.com" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "numpy",
+    "joblib",
+    "tqdm",
+    "matplotlib",
+    "setuptools",
+    "opencv-python",
+    "torch",
+    "tabulate",
+    "lmdbm"
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.urls]
+source_code = "https://github.com/yaojie-shen/Deep-Learning-Utils"
+
+[project.scripts]
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+exclude = ["venv*", "data*", "test*", "output*"]
+
+[tool.whell]
+exclude = ["venv*", "data*", "test*", "output*"]

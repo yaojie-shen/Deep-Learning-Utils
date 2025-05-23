@@ -7,12 +7,11 @@
 __all__ = ["visualize_image", "visualize_video", "inv_normalize"]
 
 import os
-import numpy as np
-import torch
 
 import matplotlib.pyplot as plt
+import numpy as np
+import torch
 from PIL import Image
-
 from torchvision.transforms.functional import normalize
 
 

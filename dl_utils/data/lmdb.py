@@ -6,9 +6,9 @@
 
 __all__ = ["JsonLmdb"]
 
-from lmdbm import Lmdb
-
 import json
+
+from lmdbm import Lmdb
 
 
 class JsonLmdb(Lmdb):

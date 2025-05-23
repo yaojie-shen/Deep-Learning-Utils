@@ -6,10 +6,10 @@
 
 __all__ = ["get_duration_info", "convert_to_h265", "convert_to_h264"]
 
-from typing import *
-
 import os
 import subprocess
+from typing import *
+
 from joblib import Parallel, delayed
 
 

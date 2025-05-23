@@ -5,7 +5,9 @@
 # @File    : test_visualize.py
 
 import unittest
+
 import numpy as np
+
 from dl_utils.visualize import *
 
 

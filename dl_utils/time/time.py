@@ -6,10 +6,11 @@
 
 
 import datetime
-import torch
 import time
-from tabulate import tabulate
 from collections import defaultdict
+
+import torch
+from tabulate import tabulate
 
 __all__ = ["get_timestamp", "Timer"]
 
@@ -32,7 +33,7 @@ class Timer:
         self._time = self._get_time()
 
     def _get_time(self):
-        return round(time.time() * 1000, self._precision)
+        return round(dl_utils.time.time.time() * 1000, self._precision)
 
     def __call__(self, stage_name=None, reset=True):
         if self._synchronize:

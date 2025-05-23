@@ -5,7 +5,9 @@
 # @File    : test_image.py
 
 import unittest
+
 import numpy as np
+
 from dl_utils.data.image import *
 from dl_utils.visualize import visualize_image
 
