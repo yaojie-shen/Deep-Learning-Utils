@@ -6,3 +6,4 @@ setuptools
 opencv-python
 torch
 tabulate
+lmdbm

@@ -24,6 +24,7 @@ setup(
         "setuptools",
         "opencv-python",
         "torch",
-        "tabulate"
+        "tabulate",
+        "lmdbm"
     ],
 )
