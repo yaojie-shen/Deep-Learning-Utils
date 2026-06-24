@@ -92,10 +92,13 @@ class GlobalCache(MutableMapping):
         """
         if key in self:
             return self[key]
-        else:
-            value = fn(**kwargs)
-            self[key] = value
-            return value
+
+        if fn is None:
+            raise KeyError(key)
+
+        value = fn(**kwargs)
+        self[key] = value
+        return value
 
     # ---------------- Persistence ----------------
     def save(self, file_path: str):

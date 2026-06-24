@@ -4,52 +4,45 @@
 # @Project : Deep-Learning-Utils
 # @File    : test_video.py
 
-import os
-import tempfile
-import time
 from unittest.mock import MagicMock, patch
 
 import numpy as np
 import torch
 from pytest import fixture
 
-from dl_utils import (get_video_duration, get_video_duration_batch, load_video,
-                      save_video)
+from dl_utils import (
+    get_video_duration,
+    get_video_duration_batch,
+    load_video,
+    save_video,
+)
 
 
-def test_save_video():
-    with tempfile.TemporaryDirectory(prefix="dl_utils_test_video_") as d:
-        # Prepare videos used by tests in this module.
-        v = np.random.randint(0, 255, (10, 128, 128, 3), dtype=np.uint8)
-        save_video(v, os.path.join(d, "test_save_video_numpy.mp4"), 30)
-        v = torch.randint(0, 255, (10, 128, 128, 3), dtype=torch.uint8)
-        save_video(v, os.path.join(d, "test_save_video_torch.mp4"), 30)
-        assert os.path.exists(os.path.join(d, "test_save_video_numpy.mp4"))
-        assert os.path.exists(os.path.join(d, "test_save_video_torch.mp4"))
+def test_save_video(tmp_path):
+    numpy_path = tmp_path / "test_save_video_numpy.mp4"
+    torch_path = tmp_path / "test_save_video_torch.mp4"
+
+    v = np.random.randint(0, 255, (10, 128, 128, 3), dtype=np.uint8)
+    save_video(v, str(numpy_path), 30)
+    v = torch.randint(0, 255, (10, 128, 128, 3), dtype=torch.uint8)
+    save_video(v, str(torch_path), 30)
+
+    assert numpy_path.exists()
+    assert torch_path.exists()
 
 
-def test_get_duration_info():
-    with tempfile.TemporaryDirectory(prefix="dl_utils_test_video_") as d:
-        # Prepare videos used by tests in this module.
-        v = np.random.randint(0, 255, (30, 128, 128, 3), dtype=np.uint8)
-        save_video(v, os.path.join(d, "test_save_video_numpy.mp4"), 30)
-        video = os.path.join(d, "test_save_video_numpy.mp4")
+def test_get_duration_info(tmp_path):
+    v = np.random.randint(0, 255, (30, 128, 128, 3), dtype=np.uint8)
+    video = str(tmp_path / "test_save_video_numpy.mp4")
+    save_video(v, video, 30)
 
-        _, _, duration = get_video_duration(video)
-        assert duration == 1.0
+    fps, frame_count, duration = get_video_duration(video)
+    batch = get_video_duration_batch([video, video])
 
-        # single
-        s_time = time.time()
-        for _ in range(10):
-            print(get_video_duration_batch([video]))
-        print(
-            f"Sequential took {time.time() - s_time}s | {10 / (time.time() - s_time)} s/video"
-        )
-
-        # parallel
-        s_time = time.time()
-        print(get_video_duration_batch([video] * 10))
-        print(f"Parallel took {time.time() - s_time}s")
+    assert fps == 30
+    assert frame_count == 30
+    assert duration == 1.0
+    assert batch == [(30, 30, 1.0), (30, 30, 1.0)]
 
 
 @fixture

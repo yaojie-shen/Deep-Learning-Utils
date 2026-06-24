@@ -3,36 +3,50 @@
 # @Author  : Yaojie Shen
 # @Project : Deep-Learning-Utils
 # @File    : test_list_files.py
-import time
 
-from pytest import mark, param, main
-from tqdm import tqdm
+import os
+
+import pytest
 
 from dl_utils import list_files, list_files_multithread
 
 
-@mark.parametrize(
-    "root,depth",
+@pytest.fixture
+def file_tree(tmp_path):
+    (tmp_path / "a").mkdir()
+    (tmp_path / "a" / "nested").mkdir()
+    (tmp_path / "a" / "one.txt").write_text("1", encoding="utf-8")
+    (tmp_path / "a" / "nested" / "two.txt").write_text("2", encoding="utf-8")
+    (tmp_path / "root.txt").write_text("root", encoding="utf-8")
+    return tmp_path
+
+
+@pytest.mark.parametrize(
+    "depth,expected",
     [
-        param(".", None),
-        param(".", 1),
-    ]
+        (
+            None,
+            {
+                "root.txt",
+                os.path.join("a", "one.txt"),
+                os.path.join("a", "nested", "two.txt"),
+            },
+        ),
+        (1, {"root.txt"}),
+        (2, {"root.txt", os.path.join("a", "one.txt")}),
+    ],
 )
-def test_list_files(root: str, depth: int):
-    s_time = time.time()
-    files = list(tqdm(list_files(root, depth=depth), desc="single thread"))
-    print(f"Total files: {len(files)}")
-    print(f"`list_files` took {time.time() - s_time}s")
+def test_list_files_respects_depth(file_tree, depth, expected):
+    files = {
+        os.path.relpath(path, file_tree)
+        for path in list_files(str(file_tree), depth=depth)
+    }
 
-    s_time = time.time()
-    files_mt = list(tqdm(list_files_multithread(root, depth=depth), desc="multi-thread"))
-    print(f"`list_files_multithread` took {time.time() - s_time}s")
-
-    assert len(files) == len(set(files))
-    assert set(files) == set(files_mt)
-
-    print(files)
+    assert files == expected
 
 
-if __name__ == '__main__':
-    main()
+def test_list_files_multithread_matches_single_thread(file_tree):
+    files = set(list_files(str(file_tree)))
+    files_mt = set(list_files_multithread(str(file_tree), n_jobs=2))
+
+    assert files_mt == files

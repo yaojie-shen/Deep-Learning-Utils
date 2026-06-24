@@ -4,9 +4,6 @@
 # @Project : Deep-Learning-Utils
 # @File    : test_mask_utils.py
 
-import tempfile
-from pathlib import Path
-
 import pytest
 
 
@@ -25,24 +22,22 @@ from dl_utils import (  # noqa: E402
 )
 
 
-def test_read_save_mask_roundtrip_with_tempfile():
-    with tempfile.TemporaryDirectory() as tmp:
-        root = Path(tmp)
-        p = root / "m.png"
+def test_read_save_mask_roundtrip_with_tmp_path(tmp_path):
+    p = tmp_path / "m.png"
 
-        m = np.zeros((16, 16), dtype=bool)
-        m[1:4, 2:6] = True
+    m = np.zeros((16, 16), dtype=bool)
+    m[1:4, 2:6] = True
 
-        save_mask(m, p)
-        m2 = load_mask(p)
-        assert m2.dtype == np.bool_
-        assert m2.shape == m.shape
-        assert np.array_equal(m2, m)
+    save_mask(m, p)
+    m2 = load_mask(p)
+    assert m2.dtype == np.bool_
+    assert m2.shape == m.shape
+    assert np.array_equal(m2, m)
 
-        # --- uint8 output ---
-        m3 = load_mask(p, as_bool=False)
-        assert m3.dtype == np.uint8
-        assert set(np.unique(m3)).issubset({0, 255})
+    # --- uint8 output ---
+    m3 = load_mask(p, as_bool=False)
+    assert m3.dtype == np.uint8
+    assert set(np.unique(m3)).issubset({0, 255})
 
 
 def test_mask_set_ops():

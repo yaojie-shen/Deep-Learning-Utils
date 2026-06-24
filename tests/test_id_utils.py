@@ -5,7 +5,6 @@
 # @File    : test_id_utils.py
 
 import re
-import tempfile
 from pathlib import Path
 
 import pytest
@@ -13,7 +12,7 @@ import pytest
 from dl_utils import IdSampleManager, generate_id, index_by_id, list_ids
 
 
-def test_list_ids_with_tempfile():
+def test_list_ids_with_tmp_path(tmp_path):
     """
     Directory layout:
 
@@ -24,88 +23,79 @@ def test_list_ids_with_tempfile():
         run_A/
         run_B/
     """
-    with tempfile.TemporaryDirectory() as tmp:
-        root = Path(tmp)
+    # --- create files ---
+    (tmp_path / "sample_001.txt").write_text("data")
+    (tmp_path / "sample_002.txt").write_text("data")
+    (tmp_path / "ignore.log").write_text("data")
 
-        # --- create files ---
-        (root / "sample_001.txt").write_text("data")
-        (root / "sample_002.txt").write_text("data")
-        (root / "ignore.log").write_text("data")
+    # --- create directories ---
+    (tmp_path / "run_A").mkdir()
+    (tmp_path / "run_B").mkdir()
 
-        # --- create directories ---
-        (root / "run_A").mkdir()
-        (root / "run_B").mkdir()
+    # --- default behavior (auto include -> files, auto matching -> stem) ---
+    ids = list_ids(str(tmp_path))
+    assert sorted(ids) == ["ignore", "sample_001", "sample_002"]
 
-        # --- default behavior (auto include -> files, auto matching -> stem) ---
-        ids = list_ids(str(root))
-        assert sorted(ids) == ["ignore", "sample_001", "sample_002"]
+    # --- include only .txt files ---
+    ids = list_ids(
+        str(tmp_path),
+        include=r"\.txt$",
+    )
+    assert sorted(ids) == ["sample_001", "sample_002"]
 
-        # --- include only .txt files ---
-        ids = list_ids(
-            str(root),
-            include=r"\.txt$",
-        )
-        assert sorted(ids) == ["sample_001", "sample_002"]
+    # --- extract numeric IDs via regex ---
+    ids = list_ids(
+        str(tmp_path),
+        include=r"\.txt$",
+        matching=re.compile(r"_(\d+)\.txt$"),
+    )
+    assert sorted(ids) == ["001", "002"]
 
-        # --- extract numeric IDs via regex ---
-        ids = list_ids(
-            str(root),
-            include=r"\.txt$",
-            matching=re.compile(r"_(\d+)\.txt$"),
-        )
-        assert sorted(ids) == ["001", "002"]
-
-        # --- exclude pattern ---
-        ids = list_ids(
-            str(root),
-            exclude=r"ignore",
-        )
-        assert "ignore" not in ids
+    # --- exclude pattern ---
+    ids = list_ids(
+        str(tmp_path),
+        exclude=r"ignore",
+    )
+    assert "ignore" not in ids
 
 
-def test_list_ids_directories_only_with_tempfile():
-    with tempfile.TemporaryDirectory() as tmp:
-        root = Path(tmp)
+def test_list_ids_directories_only_with_tmp_path(tmp_path):
+    # more dirs than files
+    (tmp_path / "A").mkdir()
+    (tmp_path / "B").mkdir()
+    (tmp_path / "C").mkdir()
+    (tmp_path / "file.txt").write_text("x")
 
-        # more dirs than files
-        (root / "A").mkdir()
-        (root / "B").mkdir()
-        (root / "C").mkdir()
-        (root / "file.txt").write_text("x")
-
-        ids = list_ids(str(root))
-        assert sorted(ids) == ["A", "B", "C"]
+    ids = list_ids(str(tmp_path))
+    assert sorted(ids) == ["A", "B", "C"]
 
 
-def test_list_ids_return_filepaths_with_tempfile():
-    with tempfile.TemporaryDirectory() as tmp:
-        root = Path(tmp)
+def test_list_ids_return_filepaths_with_tmp_path(tmp_path):
+    (tmp_path / "x_01.txt").write_text("x")
+    (tmp_path / "x_02.txt").write_text("x")
 
-        (root / "x_01.txt").write_text("x")
-        (root / "x_02.txt").write_text("x")
+    ids, paths = list_ids(
+        str(tmp_path),
+        matching=r"x_(\d+)",
+        return_filepath=True,
+    )
 
-        ids, paths = list_ids(
-            str(root),
-            matching=r"x_(\d+)",
-            return_filepath=True,
-        )
+    assert sorted(ids) == ["01", "02"]
+    assert len(ids) == len(paths)
+    assert all(p.endswith(".txt") for p in paths)
 
-        assert sorted(ids) == ["01", "02"]
-        assert len(ids) == len(paths)
-        assert all(p.endswith(".txt") for p in paths)
+    # --- return dict ---
+    id2path = list_ids(
+        str(tmp_path),
+        matching=r"x_(\d+)",
+        return_filepath=True,
+        return_dict=True,
+    )
+    print(id2path)
 
-        # --- return dict ---
-        id2path = list_ids(
-            str(root),
-            matching=r"x_(\d+)",
-            return_filepath=True,
-            return_dict=True,
-        )
-        print(id2path)
-
-        assert sorted(id2path.keys()) == ["01", "02"]
-        assert len(id2path) == len(ids)
-        assert all(p.endswith(".txt") for p in id2path.values())
+    assert sorted(id2path.keys()) == ["01", "02"]
+    assert len(id2path) == len(ids)
+    assert all(p.endswith(".txt") for p in id2path.values())
 
 
 def test_generate_id_random_mode():
@@ -249,25 +239,24 @@ def test_id_sample_manager_can_find_records_by_id_efficiently():
     assert manager.find_records_by_id("missing") == []
 
 
-def test_id_sample_manager_can_save_and_load_json_state():
-    with tempfile.TemporaryDirectory() as tmp:
-        path = Path(tmp) / "state.json"
+def test_id_sample_manager_can_save_and_load_json_state(tmp_path):
+    path = tmp_path / "state.json"
 
-        manager = IdSampleManager(["a", "b", "c", "d"])
-        manager.sample_record(2, "seeded", seed=123, metadata={"note": "demo"})
-        manager.add_record("manual", ["d"], consumed=False, metadata={"source": "external"})
-        manager.save_json(path)
+    manager = IdSampleManager(["a", "b", "c", "d"])
+    manager.sample_record(2, "seeded", seed=123, metadata={"note": "demo"})
+    manager.add_record("manual", ["d"], consumed=False, metadata={"source": "external"})
+    manager.save_json(path)
 
-        loaded = IdSampleManager.load_json(path)
+    loaded = IdSampleManager.load_json(path)
 
-        assert loaded.to_dict() == manager.to_dict()
-        assert loaded.get_remaining_ids() == manager.get_remaining_ids()
-        assert loaded.get_record("manual") == {
-            "ids": ["d"],
-            "kind": "manual",
-            "consumed": False,
-            "metadata": {"source": "external"},
-        }
+    assert loaded.to_dict() == manager.to_dict()
+    assert loaded.get_remaining_ids() == manager.get_remaining_ids()
+    assert loaded.get_record("manual") == {
+        "ids": ["d"],
+        "kind": "manual",
+        "consumed": False,
+        "metadata": {"source": "external"},
+    }
 
 
 def test_id_sample_manager_rejects_duplicate_or_unknown_ids():

@@ -4,95 +4,86 @@
 # @Project : Deep-Learning-Utils
 # @File    : test_download.py
 
+import hashlib
 import multiprocessing as mp
 import os
-import tempfile
 
 import pytest
 
 from dl_utils import download
 
-# A small, stable payload for network tests.
-TEST_URL = "https://httpbin.org/bytes/1024"
+
+def test_download_reuses_existing_file(tmp_path):
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"first payload")
+    target = tmp_path / "payload.bin"
+
+    downloaded_path = download(source.as_uri(), filepath=str(target))
+
+    assert downloaded_path == str(target)
+    assert target.read_bytes() == b"first payload"
+
+    source.write_bytes(b"changed payload")
+    downloaded_path = download(source.as_uri(), filepath=str(target))
+
+    assert downloaded_path == str(target)
+    assert target.read_bytes() == b"first payload"
 
 
-def test_download_reuses_existing_file():
-    with tempfile.TemporaryDirectory() as tmpdir:
-        filepath = os.path.join(tmpdir, "payload.bin")
+def test_download_with_sha256(tmp_path):
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"payload")
+    target = tmp_path / "payload.bin"
+    expected_sha256 = hashlib.sha256(b"payload").hexdigest()
 
-        # First download
-        downloaded_path = download(TEST_URL, filepath=filepath)
+    downloaded_path = download(
+        source.as_uri(), filepath=str(target), expected_sha256=expected_sha256
+    )
 
-        assert downloaded_path == filepath
-        assert os.path.isfile(downloaded_path)
-        assert os.path.getsize(downloaded_path) > 0
+    assert downloaded_path == str(target)
+    assert target.read_bytes() == b"payload"
 
-        # Second download should reuse existing file
-        downloaded_path_2 = download(TEST_URL, filepath=filepath)
 
-        assert downloaded_path_2 == filepath
-        assert os.path.isfile(downloaded_path_2)
+def test_download_removes_tmp_file_when_sha256_mismatch(tmp_path):
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"payload")
+    target = tmp_path / "payload.bin"
 
-def test_download_with_sha256():
-    with tempfile.TemporaryDirectory() as tmpdir:
-        filepath = os.path.join(tmpdir, "payload.bin")
-        # httpbin's /bytes/<n> endpoint returns random bytes, so it does not have a stable checksum.
-        # Fetch once and use the actual sha256 of the downloaded content for the verification path.
-        downloaded_path = download(TEST_URL, filepath=filepath)
-        import hashlib
-        with open(downloaded_path, "rb") as f:
-            expected_sha256 = hashlib.sha256(f.read()).hexdigest()
-
-        downloaded_path = download(TEST_URL, filepath=filepath, expected_sha256=expected_sha256)
-        assert downloaded_path == filepath
-
-    # Expect error
     with pytest.raises(RuntimeError):
-        downloaded_path = download(TEST_URL, filepath=filepath, expected_sha256="error")
+        download(source.as_uri(), filepath=str(target), expected_sha256="wrong")
+
+    assert not target.exists()
+    assert not (tmp_path / "payload.bin.tmp").exists()
 
 
 def _worker(url, path, queue):
     try:
-        result = download(url, filepath=path)
-        queue.put(result)
+        queue.put(download(url, filepath=path))
     except Exception as e:
         queue.put(e)
 
 
-def test_parallel_download_multiprocessing():
-    """Test multiple concurrent call of download for the same file."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        target_path = os.path.join(tmpdir, "payload.bin")
+def test_parallel_download_multiprocessing(tmp_path):
+    source = tmp_path / "source.bin"
+    source.write_bytes(b"payload")
+    target_path = str(tmp_path / "payload.bin")
 
-        ctx = mp.get_context("spawn")
-        queue = ctx.Queue()
+    ctx = mp.get_context("spawn")
+    queue = ctx.Queue()
+    processes = [
+        ctx.Process(target=_worker, args=(source.as_uri(), target_path, queue))
+        for _ in range(4)
+    ]
 
-        processes = [
-            ctx.Process(target=_worker, args=(TEST_URL, target_path, queue))
-            for _ in range(4)
-        ]
+    for process in processes:
+        process.start()
+    for process in processes:
+        process.join()
 
-        for p in processes:
-            p.start()
-        for p in processes:
-            p.join()
+    results = [queue.get() for _ in processes]
 
-        results = [queue.get() for _ in processes]
-
-        # All processes should succeed
-        for r in results:
-            assert isinstance(r, str), f"Worker failed with {r}"
-
-        # All return the same file
-        assert all(r == target_path for r in results)
-
-        # File exists and is non-empty
-        assert os.path.isfile(target_path)
-        assert os.path.getsize(target_path) > 0
-
-        # No temporary files left behind
-        leftovers = [
-            f for f in os.listdir(tmpdir)
-            if f.endswith(".tmp")
-        ]
-        assert not leftovers
+    assert all(isinstance(result, str) for result in results)
+    assert all(result == target_path for result in results)
+    assert os.path.isfile(target_path)
+    assert os.path.getsize(target_path) > 0
+    assert not [name for name in os.listdir(tmp_path) if name.endswith(".tmp")]
