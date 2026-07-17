@@ -3,7 +3,7 @@ dl-utils
 
 `dl-utils` is a lightweight collection of utilities for deep learning workflows.
 It includes helpers for data IO/normalization, distributed utilities, inference helpers,
-visualization, and small general-purpose utilities.
+data inspection, and small general-purpose utilities.
 
 Start here:
 
