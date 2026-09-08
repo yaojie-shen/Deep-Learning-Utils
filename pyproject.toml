@@ -1,10 +1,10 @@
 [project]
 name = "dl-utils"
-version = "0.3.0"
+version = "0.4.0"
 description = ""
 readme = "README.md"
 license = { file = "LICENSE" }
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 authors = [{ name = "Yaojie Shen", email = "syj.micro@outlook.com" }]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -36,6 +36,7 @@ docs = [
     "myst-parser",
     "sphinx-rtd-theme",
     "sphinxcontrib-programoutput",
+    "sphinx-autobuild"
 ]
 
 [project.urls]

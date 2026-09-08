@@ -96,6 +96,21 @@ def test_global_cache_get_with_fn(cache):
     assert cache.get("a") == 2
 
 
+def test_global_cache_get_missing_without_fn_raises_key_error(cache):
+    cache.clear()
+
+    with pytest.raises(KeyError):
+        cache.get("missing")
+
+
+def test_global_cache_get_updates_lru_order(cache):
+    assert cache.get("a") == 1
+    cache["c"] = 3
+
+    assert "b" not in cache
+    assert list(cache.cache.items()) == [("a", 1), ("c", 3)]
+
+
 def test_global_cache_persistence(cache):
     dump = cache.to_bytes()
     cache.clear()

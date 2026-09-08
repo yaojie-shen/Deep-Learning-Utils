@@ -34,11 +34,11 @@ def chunk(
     if n_chunks is None and chunk_size is None:
         raise ValueError("One of n_chunks or chunk_size must be set")
 
-    if chunk_size:
+    if chunk_size is not None:
         if chunk_size <= 0:
             raise ValueError("Chunk size must be greater than 0")
         chunks = [data[i : i + chunk_size] for i in range(0, len(data), chunk_size)]
-    elif n_chunks:
+    elif n_chunks is not None:
         if n_chunks <= 0:
             raise ValueError("Number of chunks must be greater than 0")
 
@@ -52,9 +52,6 @@ def chunk(
             end = start + chunk_size + (1 if i < remainder else 0)
             chunks.append(data[start:end])
             start = end
-    else:
-        raise RuntimeError
-
     # integrity check
     assert sum(len(c) for c in chunks) == len(data), (
         "The total length of chunks is not equal to the length of the input data."

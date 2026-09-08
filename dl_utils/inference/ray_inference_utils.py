@@ -100,4 +100,58 @@ class RayActorScheduler:
         return self._scheduler_actor.submit.remote(*args, **kwargs)
 
 
-__all__ = ["RayActorScheduler"]
+class _RayActorMethodProxy:
+    """Proxy one actor method through a RayActorScheduler."""
+
+    def __init__(self, scheduler: RayActorScheduler, method_name: str):
+        self._scheduler = scheduler
+        self._method_name = method_name
+
+    def remote(self, *args, **kwargs):
+        """Submit this method using the original Ray actor call style."""
+        return self._scheduler.submit(self._method_name, *args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        """Alias for ``remote`` for more convenient scheduler usage."""
+        return self.remote(*args, **kwargs)
+
+
+class RayActorSchedulerWrapper:
+    """Actor-like wrapper that load balances method calls across Ray actors.
+
+    The wrapper keeps the normal Ray actor method style while using
+    RayActorScheduler internally:
+
+        wrapper = RayActorSchedulerWrapper(actors)
+        ref = wrapper.inference.remote(x)
+
+    Direct calls are also supported as an alias:
+
+        ref = wrapper.inference(x)
+
+    Args:
+        actors: A list of Ray actor handles of the same interface.
+        queue_max_size: Token bucket size per actor. Effectively caps the
+            number of in-flight tasks allowed per actor to this value.
+    """
+
+    def __init__(
+        self,
+        actors: List[ray.actor.ActorHandle],
+        queue_max_size: int = 2,
+    ):
+        self._scheduler = RayActorScheduler(
+            actors=actors,
+            actor_fn=lambda actor, method_name, *args, **kwargs: getattr(
+                actor, method_name
+            ).remote(*args, **kwargs),
+            queue_max_size=queue_max_size,
+        )
+
+    def __getattr__(self, method_name: str) -> _RayActorMethodProxy:
+        if method_name.startswith("_"):
+            raise AttributeError(method_name)
+        return _RayActorMethodProxy(self._scheduler, method_name)
+
+
+__all__ = ["RayActorScheduler", "RayActorSchedulerWrapper"]

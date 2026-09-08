@@ -7,6 +7,7 @@
 import json
 import os
 import pickle
+import warnings
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, Iterator, List, Optional, Union
 
@@ -216,75 +217,208 @@ def save_jsonl(data, file, **kwargs):
                 fp.write("\n")
 
 
-def iter_jsonl(file, max_samples: Optional[int] = None):
-    """Create an iterable view over a JSONL file.
+class JsonlHelper:
+    """Lazy helper for reading JSONL files.
 
     Empty lines are skipped. The returned object supports iteration, ``len()``,
     and non-negative integer indexing. Length and indexing are backed by a lazy
-    offset index built on first use.
+    offset index built on first use, so normal iteration does not need to load
+    the whole file into memory.
+
+    Args:
+        file_path: Source JSONL file path.
+        max_samples: Optional maximum number of non-empty JSONL records to expose.
+        cache_index: If ``True``, save the lazy offset index to a JSON cache file
+            next to the JSONL file. For ``data.jsonl``, the cache file is
+            ``.data.jsonl.index``. The cache stores file metadata and is rebuilt
+            automatically when the JSONL file size or modification time changes.
+            When ``cache_index=True``, the full index is built and cached even if
+            ``max_samples`` is set.
+
+    Examples:
+        Iterate over a JSONL file lazily::
+
+            from dl_utils import JsonlHelper
+
+            records = JsonlHelper("data.jsonl")
+            for item in records:
+                print(item)
+
+        Use ``len()`` and integer indexing when random access is helpful::
+
+            records = JsonlHelper("data.jsonl", max_samples=100)
+            print(len(records))
+            first = records[0]
+
+        Cache the offset index for repeated random access to a large JSONL file::
+
+            records = JsonlHelper("data.jsonl", cache_index=True)
+            print(len(records))  # builds and writes .data.jsonl.index on first use
+    """
+
+    def __init__(
+        self,
+        file_path: PathLike,
+        max_samples: Optional[int] = None,
+        cache_index: bool = False,
+    ):
+        if max_samples is not None:
+            if not isinstance(max_samples, int) or isinstance(max_samples, bool):
+                raise TypeError("max_samples must be a non-negative integer or None")
+            if max_samples < 0:
+                raise ValueError("max_samples must be a non-negative integer or None")
+
+        self.file_path = file_path
+        self._offsets: Optional[List[int]] = None
+        self._max_samples = max_samples
+        self._cache_index = cache_index
+        if self._cache_index and self._max_samples is not None:
+            warnings.warn(
+                "JsonlHelper(cache_index=True, max_samples=...) builds and caches "
+                "the full JSONL offset index. max_samples only limits the exposed "
+                "records, not the initial index-building cost.",
+                UserWarning,
+                stacklevel=2,
+            )
+        path = Path(file_path)
+        self._index_file = path.with_name(f".{path.name}.index")
+
+    def _file_info(self) -> Dict[str, Any]:
+        path = Path(self.file_path)
+        stat = path.stat()
+        return {
+            "name": path.name,
+            "size": stat.st_size,
+            "mtime_ns": stat.st_mtime_ns,
+        }
+
+    def _load_cached_offsets(self) -> Optional[List[int]]:
+        if not self._cache_index or not self._index_file.exists():
+            return None
+
+        try:
+            with open(self._index_file, "r") as fp:
+                data = json.load(fp)
+        except (OSError, json.JSONDecodeError):
+            return None
+
+        if data.get("version") != 1 or data.get("file") != self._file_info():
+            return None
+
+        offsets = data.get("offsets")
+        if not isinstance(offsets, list) or not all(
+            isinstance(x, int) for x in offsets
+        ):
+            return None
+        return offsets
+
+    def _save_cached_offsets(self, offsets: List[int]):
+        if not self._cache_index:
+            return
+
+        data = {
+            "version": 1,
+            "file": self._file_info(),
+            "offsets": offsets,
+        }
+        tmp_file = self._index_file.with_name(f"{self._index_file.name}.tmp")
+        with open(tmp_file, "w") as fp:
+            json.dump(data, fp)
+        os.replace(tmp_file, self._index_file)
+
+    def _ensure_offsets(self):
+        if self._offsets is not None:
+            return
+
+        cached_offsets = self._load_cached_offsets()
+        if cached_offsets is not None:
+            self._offsets = cached_offsets
+            return
+
+        offsets = []
+        with open(self.file_path, "r") as fp:
+            while True:
+                if (
+                    not self._cache_index
+                    and self._max_samples is not None
+                    and len(offsets) >= self._max_samples
+                ):
+                    break
+                pos = fp.tell()
+                line = fp.readline()
+                if not line:
+                    break
+                if line.strip():
+                    offsets.append(pos)
+        self._offsets = offsets
+        self._save_cached_offsets(offsets)
+
+    def __iter__(self):
+        with open(self.file_path, "r") as fp:
+            count = 0
+            for line in fp:
+                line = line.strip()
+                if not line:
+                    continue
+                if self._max_samples is not None and count >= self._max_samples:
+                    break
+                count += 1
+                yield json.loads(line)
+
+    def __len__(self):
+        self._ensure_offsets()
+        if self._max_samples is None:
+            return len(self._offsets)
+        return min(len(self._offsets), self._max_samples)
+
+    def _load_by_offset(self, offset: Union[int, Iterable[int]]) -> Any:
+        is_single_offset = isinstance(offset, int)
+        offsets = [offset] if is_single_offset else list(offset)
+        items = []
+        with open(self.file_path, "r") as fp:
+            for item_offset in offsets:
+                fp.seek(item_offset)
+                line = fp.readline()
+                items.append(json.loads(line))
+        if is_single_offset:
+            return items[0]
+        return items
+
+    def __getitem__(self, index):
+        self._ensure_offsets()
+        effective_len = len(self)
+
+        if isinstance(index, slice):
+            offsets = [self._offsets[i] for i in range(*index.indices(effective_len))]
+            return self._load_by_offset(offsets)
+
+        if not isinstance(index, int):
+            raise TypeError("index must be int or slice")
+        if index < 0:
+            index += effective_len
+        if index < 0:
+            raise IndexError("index out of range")
+        if index >= effective_len:
+            raise IndexError("index out of range")
+
+        return self._load_by_offset(self._offsets[index])
+
+
+def iter_jsonl(file, max_samples: Optional[int] = None):
+    """Iterate over a JSONL file lazily.
+
+    This is a convenience wrapper around :class:`JsonlHelper`. Use
+    :class:`JsonlHelper` directly when you need ``len()`` or integer indexing.
 
     Args:
         file: Source JSONL file path.
         max_samples: Optional maximum number of non-empty JSONL records to expose.
 
     Returns:
-        An iterable object yielding one decoded JSON object per non-empty line.
+        An iterator yielding one decoded JSON object per non-empty line.
     """
 
-    class _JsonlIterable:
-        def __init__(self, file_path, max_samples: Optional[int] = None):
-            self.file_path = file_path
-            self._offsets = None
-            self._max_samples = max_samples
-
-        def _ensure_offsets(self):
-            if self._offsets is not None:
-                return
-            offsets = []
-            with open(self.file_path, "r") as fp:
-                while True:
-                    pos = fp.tell()
-                    line = fp.readline()
-                    if not line:
-                        break
-                    if line.strip():
-                        offsets.append(pos)
-            self._offsets = offsets
-
-        def __iter__(self):
-            with open(self.file_path, "r") as fp:
-                count = 0
-                for line in fp:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    if self._max_samples is not None and count >= self._max_samples:
-                        break
-                    count += 1
-                    yield json.loads(line)
-
-        def __len__(self):
-            self._ensure_offsets()
-            if self._max_samples is None:
-                return len(self._offsets)
-            return min(len(self._offsets), self._max_samples)
-
-        def __getitem__(self, index):
-            if not isinstance(index, int):
-                raise TypeError("index must be int")
-            if index < 0:
-                raise IndexError("negative index is not supported")
-            self._ensure_offsets()
-            effective_len = len(self)
-            if index >= effective_len:
-                raise IndexError("index out of range")
-
-            with open(self.file_path, "r") as fp:
-                fp.seek(self._offsets[index])
-                line = fp.readline()
-                return json.loads(line)
-
-    return _JsonlIterable(file, max_samples=max_samples)
+    return iter(JsonlHelper(file, max_samples=max_samples))
 
 
 def load_jsonl(file, max_samples: Optional[int] = None):
@@ -536,6 +670,7 @@ __all__ = [
     "save_json",
     "load_json",
     "save_jsonl",
+    "JsonlHelper",
     "iter_jsonl",
     "load_jsonl",
     "concurrent_file_loader",

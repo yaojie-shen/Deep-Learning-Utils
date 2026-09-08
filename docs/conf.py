@@ -7,9 +7,10 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "dl-utils"
-copyright = "2025, Yaojie Shen"
+copyright = "2025-2026, Yaojie Shen"
 author = "Yaojie Shen"
-release = "https://github.com/AcherStyx/Deep-Learning-Utils"
+version = "0.4"
+release = "0.4.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -41,6 +42,13 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+html_context = {
+    "display_github": True,
+    "github_user": "yaojie-shen",
+    "github_repo": "Deep-Learning-Utils",
+    "github_version": "main",
+    "conf_py_path": "/docs/",
+}
 
 # Site icon (favicon)
 html_favicon = "_static/toolbox.svg"

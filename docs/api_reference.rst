@@ -149,6 +149,13 @@ Ollama Utils
 Misc
 ----
 
+Steps
+^^^^^
+.. automodule:: dl_utils.step_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Chunk
 ^^^^^
 .. automodule:: dl_utils.chunk_utils
