@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2022/10/19 19:29
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_timer.py
 
 import time
 
 from pytest import mark, param
 
-from dl_utils import get_timestamp, get_readable_timestamp, ExecutionTimer
+from common_utils import get_timestamp, get_readable_timestamp, ExecutionTimer
 
 
 def test_get_timestamp():

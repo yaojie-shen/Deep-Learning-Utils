@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 10/10/25
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_normalize.py
 
 
@@ -9,7 +9,7 @@ import numpy as np
 import pytest
 import torch
 
-from dl_utils import convert_image_video_range, inv_normalize, normalize
+from common_utils import convert_image_video_range, inv_normalize, normalize
 
 
 @pytest.mark.parametrize("dtype", [np.float32, torch.float32])

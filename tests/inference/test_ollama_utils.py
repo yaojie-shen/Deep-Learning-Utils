@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2/5/26
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_ollama_utils.py
 
 import pytest
 
 ollama = pytest.importorskip("ollama")
 
-from dl_utils.inference import ollama_utils
-from dl_utils.inference.ollama_utils import OllamaModel, ensure_ollama_running
+from common_utils.inference import ollama_utils
+from common_utils.inference.ollama_utils import OllamaModel, ensure_ollama_running
 
 
 def test_ensure_ollama_running_returns_when_server_is_already_running(monkeypatch):

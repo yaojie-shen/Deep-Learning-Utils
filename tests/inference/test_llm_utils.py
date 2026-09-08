@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2/6/26
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_llm_utils.py
 
 import json
 
 import pytest
 
-from dl_utils import (
+from common_utils import (
     extract_json,
     format_prompt,
     load_prompt,

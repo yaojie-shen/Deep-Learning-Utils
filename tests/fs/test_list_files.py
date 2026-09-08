@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # @Time    : 5/23/25
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_list_files.py
 
 import os
 
 import pytest
 
-from dl_utils import list_files, list_files_multithread
+from common_utils import list_files, list_files_multithread
 
 
 @pytest.fixture

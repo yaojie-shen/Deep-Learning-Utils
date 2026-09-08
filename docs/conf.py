@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "dl-utils"
+project = "common-utils"
 copyright = "2025-2026, Yaojie Shen"
 author = "Yaojie Shen"
 version = "1.0"
@@ -45,7 +45,7 @@ html_static_path = ["_static"]
 html_context = {
     "display_github": True,
     "github_user": "yaojie-shen",
-    "github_repo": "Deep-Learning-Utils",
+    "github_repo": "Common-Utils",
     "github_version": "main",
     "conf_py_path": "/docs/",
 }

@@ -1,7 +1,7 @@
-dl-utils
-========
+Common-Utils
+============
 
-`dl-utils` is a lightweight collection of utilities for deep learning workflows.
+`common-utils` is a lightweight collection of utilities for deep learning workflows.
 It includes helpers for data IO/normalization, distributed utilities, inference helpers,
 data inspection, and small general-purpose utilities.
 

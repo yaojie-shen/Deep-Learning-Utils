@@ -1,5 +1,5 @@
 [project]
-name = "dl-utils"
+name = "Common-Utils"
 version = "1.0.0"
 description = ""
 readme = "README.md"
@@ -40,10 +40,10 @@ docs = [
 ]
 
 [project.urls]
-source_code = "https://github.com/yaojie-shen/Deep-Learning-Utils"
+source_code = "https://github.com/yaojie-shen/Common-Utils"
 
 [project.scripts]
-inspect_data = "dl_utils.inspect_data_utils:main"
+inspect_data = "common_utils.inspect_data_utils:main"
 
 [build-system]
 requires = ["setuptools>=42", "wheel"]

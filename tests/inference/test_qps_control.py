@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 7/18/25
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_qps_control.py
 
 import asyncio
@@ -9,7 +9,7 @@ import time
 
 from pytest import approx, mark, param
 
-from dl_utils import QPSLimiter
+from common_utils import QPSLimiter
 
 
 def _fn(sleep_time, return_value):

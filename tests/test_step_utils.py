@@ -1,6 +1,6 @@
 import pytest
 
-from dl_utils import parse_steps
+from common_utils import parse_steps
 
 
 def test_parse_separated_string_strips_whitespace_and_deduplicates():

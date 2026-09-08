@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # @Time    : 10/29/25
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_memory_utils.py
 
-from dl_utils import MemoryStats, measure_memory
+from common_utils import MemoryStats, measure_memory
 
 
 def test_memory_stats_as_dict_and_format_message():

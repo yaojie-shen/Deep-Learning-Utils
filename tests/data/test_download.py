@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 1/13/26
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_download.py
 
 import hashlib
@@ -10,7 +10,7 @@ import os
 
 import pytest
 
-from dl_utils import download
+from common_utils import download
 
 
 def test_download_reuses_existing_file(tmp_path):

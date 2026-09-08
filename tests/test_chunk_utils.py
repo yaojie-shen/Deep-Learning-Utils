@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # @Time    : 6/24/26
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_chunk_utils.py
 
 import pytest
 
-from dl_utils import chunk, sort_chunk
+from common_utils import chunk, sort_chunk
 
 
 def test_chunk_by_number_balances_remainder():

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 1/20/26
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_save_and_load.py
 import json
 import warnings
@@ -9,7 +9,7 @@ from pathlib import Path
 
 from tqdm import tqdm
 
-from dl_utils import (
+from common_utils import (
     JsonlHelper,
     concurrent_file_loader,
     iter_files,

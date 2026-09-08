@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # @Time    : 6/24/26
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_array.py
 
 import numpy as np
 import pytest
 import torch
 
-from dl_utils import is_ndarray, is_tensor, to_numpy, to_original, to_tensor
+from common_utils import is_ndarray, is_tensor, to_numpy, to_original, to_tensor
 
 
 def test_to_numpy_preserves_numpy_array_instance():

@@ -92,7 +92,7 @@ For example:
 .. code-block:: python
 
    >>> import torch
-   >>> from dl_utils import inspect_data
+   >>> from common_utils import inspect_data
    >>>
    >>> data = torch.randn(3, 3)
    >>> inspect_data(data)
@@ -104,4 +104,4 @@ For example:
 API
 ~~~
 
-The underlying Python API is documented under :doc:`api_reference` (see ``dl_utils.inspect_data_utils``).
+The underlying Python API is documented under :doc:`api_reference` (see ``common_utils.inspect_data_utils``).

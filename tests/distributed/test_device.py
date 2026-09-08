@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # @Time    : 10/23/25
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_device.py
 
 import torch
 
-from dl_utils import recursive_to
+from common_utils import recursive_to
 
 
 def test_recursive_to():

@@ -11,56 +11,56 @@ Data
 
 Image
 ^^^^^
-.. automodule:: dl_utils.data.image
+.. automodule:: common_utils.data.image
    :members:
    :undoc-members:
    :show-inheritance:
 
 Video
 ^^^^^
-.. automodule:: dl_utils.data.video
+.. automodule:: common_utils.data.video
    :members:
    :undoc-members:
    :show-inheritance:
 
 Array
 ^^^^^
-.. automodule:: dl_utils.data.array
+.. automodule:: common_utils.data.array
    :members:
    :undoc-members:
    :show-inheritance:
 
 Normalization
 ^^^^^^^^^^^^^
-.. automodule:: dl_utils.data.normalize
+.. automodule:: common_utils.data.normalize
    :members:
    :undoc-members:
    :show-inheritance:
 
 Save & Load
 ^^^^^^^^^^^
-.. automodule:: dl_utils.data.save_and_load
+.. automodule:: common_utils.data.save_and_load
    :members:
    :undoc-members:
    :show-inheritance:
 
 LMDB
 ^^^^
-.. automodule:: dl_utils.data.lmdb
+.. automodule:: common_utils.data.lmdb
    :members:
    :undoc-members:
    :show-inheritance:
 
 Sampling
 ^^^^^^^^
-.. automodule:: dl_utils.data.sample
+.. automodule:: common_utils.data.sample
    :members:
    :undoc-members:
    :show-inheritance:
 
 Download
 ^^^^^^^^
-.. automodule:: dl_utils.data.download
+.. automodule:: common_utils.data.download
    :members:
    :undoc-members:
    :show-inheritance:
@@ -71,28 +71,28 @@ Distributed
 
 Basic
 ^^^^^
-.. automodule:: dl_utils.distributed.basic
+.. automodule:: common_utils.distributed.basic
    :members:
    :undoc-members:
    :show-inheritance:
 
 Device
 ^^^^^^
-.. automodule:: dl_utils.distributed.device
+.. automodule:: common_utils.distributed.device
    :members:
    :undoc-members:
    :show-inheritance:
 
 Gather
 ^^^^^^
-.. automodule:: dl_utils.distributed.gather
+.. automodule:: common_utils.distributed.gather
    :members:
    :undoc-members:
    :show-inheritance:
 
 Breakpoint
 ^^^^^^^^^^
-.. automodule:: dl_utils.distributed.breakpoint
+.. automodule:: common_utils.distributed.breakpoint
    :members:
    :undoc-members:
    :show-inheritance:
@@ -102,14 +102,14 @@ File System
 
 Dir
 ^^^
-.. automodule:: dl_utils.fs.dir
+.. automodule:: common_utils.fs.dir
    :members:
    :undoc-members:
    :show-inheritance:
 
 List Files
 ^^^^^^^^^^
-.. automodule:: dl_utils.fs.list_files
+.. automodule:: common_utils.fs.list_files
    :members:
    :undoc-members:
    :show-inheritance:
@@ -120,28 +120,28 @@ Inference
 
 LLM Utils
 ^^^^^^^^^
-.. automodule:: dl_utils.inference.llm_utils
+.. automodule:: common_utils.inference.llm_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
 QPS Control
 ^^^^^^^^^^^
-.. automodule:: dl_utils.inference.qps_control
+.. automodule:: common_utils.inference.qps_control
    :members:
    :undoc-members:
    :show-inheritance:
 
 Ray Inference Utils
 ^^^^^^^^^^^^^^^^^^^
-.. automodule:: dl_utils.inference.ray_inference_utils
+.. automodule:: common_utils.inference.ray_inference_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
 Ollama Utils
 ^^^^^^^^^^^^
-.. automodule:: dl_utils.inference.ollama_utils
+.. automodule:: common_utils.inference.ollama_utils
    :members:
    :undoc-members:
    :show-inheritance:
@@ -151,77 +151,77 @@ Misc
 
 Steps
 ^^^^^
-.. automodule:: dl_utils.step_utils
+.. automodule:: common_utils.step_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
 Chunk
 ^^^^^
-.. automodule:: dl_utils.chunk_utils
+.. automodule:: common_utils.chunk_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
 Decorators
 ^^^^^^^^^^
-.. automodule:: dl_utils.decorators
+.. automodule:: common_utils.decorators
    :members:
    :undoc-members:
    :show-inheritance:
 
 Cache
 ^^^^^
-.. automodule:: dl_utils.global_cache_utils
+.. automodule:: common_utils.global_cache_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
 Env
 ^^^
-.. automodule:: dl_utils.env_utils
+.. automodule:: common_utils.env_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
 ID
 ^^
-.. automodule:: dl_utils.id_utils
+.. automodule:: common_utils.id_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
 Mask
 ^^^^
-.. automodule:: dl_utils.mask_utils
+.. automodule:: common_utils.mask_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
 Inspect Data
 ^^^^^^^^^^^^
-.. automodule:: dl_utils.inspect_data_utils
+.. automodule:: common_utils.inspect_data_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
 Memory
 ^^^^^^
-.. automodule:: dl_utils.memory_utils
+.. automodule:: common_utils.memory_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
 Prefetcher
 ^^^^^^^^^^
-.. automodule:: dl_utils.prefetcher
+.. automodule:: common_utils.prefetcher
    :members:
    :undoc-members:
    :show-inheritance:
 
 Timer
 ^^^^^
-.. automodule:: dl_utils.timer
+.. automodule:: common_utils.timer
    :members:
    :undoc-members:
    :show-inheritance:
