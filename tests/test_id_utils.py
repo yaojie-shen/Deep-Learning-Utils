@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 1/28/26
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_id_utils.py
 
 import re
@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from dl_utils import IdSampleManager, generate_id, index_by_id, list_ids
+from common_utils import IdSampleManager, generate_id, index_by_id, list_ids
 
 
 def test_list_ids_with_tmp_path(tmp_path):

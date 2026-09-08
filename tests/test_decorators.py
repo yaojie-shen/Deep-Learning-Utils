@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 12/5/25
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_decorators.py
 
 import inspect
@@ -9,7 +9,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from dl_utils import barrier_on_entry, flex_kwargs, log_on_entry
+from common_utils import barrier_on_entry, flex_kwargs, log_on_entry
 
 
 def test_log_on_entry_logs_and_calls_function():
@@ -29,7 +29,7 @@ def test_barrier_on_entry_direct():
     """Test usage: @barrier_on_entry"""
     mock_barrier = Mock()
 
-    with patch("dl_utils.distributed.basic.barrier_if_distributed", mock_barrier):
+    with patch("common_utils.distributed.basic.barrier_if_distributed", mock_barrier):
 
         @barrier_on_entry
         def my_func(x):

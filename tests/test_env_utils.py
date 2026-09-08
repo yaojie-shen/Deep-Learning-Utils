@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # @Time    : 3/6/26
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_env_utils.py
 
 from pathlib import Path
 
 import pytest
 
-from dl_utils.env_utils import get_env
+from common_utils.env_utils import get_env
 
 
 def test_env_used_when_no_files(tmp_path, monkeypatch):

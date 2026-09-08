@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # @Time    : 10/10/25
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_basic.py
 
 from dataclasses import dataclass
 
 import pytest
 
-from dl_utils import (
+from common_utils import (
     barrier_if_distributed,
     dist_info,
     get_global_rank,
@@ -56,10 +56,10 @@ def mock_dist(monkeypatch):
     monkeypatch.setattr("torch.distributed.get_world_size", mock.get_world_size)
     monkeypatch.setattr("torch.distributed.get_rank", mock.get_rank)
     monkeypatch.setattr(
-        "dl_utils.distributed.basic.get_master_addr", mock.get_master_addr
+        "common_utils.distributed.basic.get_master_addr", mock.get_master_addr
     )
     monkeypatch.setattr(
-        "dl_utils.distributed.basic.get_master_port", mock.get_master_port
+        "common_utils.distributed.basic.get_master_port", mock.get_master_port
     )
     return mock
 

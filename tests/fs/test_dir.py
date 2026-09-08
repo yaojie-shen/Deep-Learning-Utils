@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 # @Time    : 6/24/26
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_dir.py
 
-from dl_utils import make_parent_dirs
+from common_utils import make_parent_dirs
 
 
 def test_make_parent_dirs_creates_nested_parent(tmp_path):

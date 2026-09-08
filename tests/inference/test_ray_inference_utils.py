@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 7/18/25
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_ray_inference_utils.py
 
 import os
@@ -12,12 +12,12 @@ import pytest
 
 ray = pytest.importorskip("ray")
 pytestmark = pytest.mark.skipif(
-    os.environ.get("DL_UTILS_RUN_RAY_TESTS") != "1",
+    os.environ.get("COMMON_UTILS_RUN_RAY_TESTS") != "1",
     reason="Ray actor integration tests are opt-in because they start local Ray workers.",
 )
 
 
-from dl_utils import RayActorScheduler, RayActorSchedulerWrapper  # noqa: E402
+from common_utils import RayActorScheduler, RayActorSchedulerWrapper  # noqa: E402
 
 
 @ray.remote

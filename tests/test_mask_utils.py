@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 3/20/26
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_mask_utils.py
 
 import pytest
@@ -11,7 +11,7 @@ np = pytest.importorskip("numpy")
 pytest.importorskip("PIL")
 from PIL import Image
 
-from dl_utils import (  # noqa: E402
+from common_utils import (  # noqa: E402
     intersect_masks,
     invert_mask,
     load_mask,

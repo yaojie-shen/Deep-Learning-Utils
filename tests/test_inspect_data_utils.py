@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 8/1/25
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_inspect_data_utils.py
 
 import numpy as np
@@ -9,7 +9,7 @@ import pandas as pd
 import pytest
 import torch
 
-from dl_utils import inspect_data
+from common_utils import inspect_data
 
 
 @pytest.mark.parametrize(

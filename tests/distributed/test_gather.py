@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # @Time    : 6/24/26
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_gather.py
 
 import pytest
 
-from dl_utils import gather_objects
+from common_utils import gather_objects
 
 
 def test_gather_objects_flattens_lists_from_all_ranks(monkeypatch):

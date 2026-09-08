@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # @Time    : 7/21/25
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_sample.py
 
 import numpy as np
 import pytest
 import torch
 
-from dl_utils import sample_contiguous, sample_evenly, sample_randomly
+from common_utils import sample_contiguous, sample_evenly, sample_randomly
 
 
 @pytest.mark.parametrize(

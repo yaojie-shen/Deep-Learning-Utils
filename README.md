@@ -1,21 +1,21 @@
-# Deep-Learning-Utils
+# Common-Utils
 
-`dl-utils` is a lightweight Python utility library for deep learning workflows. It includes helpers for data IO and normalization, filesystem traversal, distributed training, inference utilities, data inspection, and small general-purpose utilities.
+`common-utils` is a lightweight Python utility library for deep learning workflows. It includes helpers for data IO and normalization, filesystem traversal, distributed training, inference utilities, data inspection, and small general-purpose utilities.
 
-For the full API reference and detailed documentation, please refer to the [documentation](https://yaojie-shen.github.io/Deep-Learning-Utils/).
+For the full API reference and detailed documentation, please refer to the [documentation](https://yaojie-shen.github.io/Common-Utils/).
 
 ## Installation
 
 Install the package from source:
 
 ```bash
-pip install git+https://github.com/yaojie-shen/Deep-Learning-Utils.git
+pip install git+https://github.com/yaojie-shen/Common-Utils.git
 ```
 
 Install the latest development version:
 
 ```bash
-pip install git+https://github.com/yaojie-shen/Deep-Learning-Utils.git@dev
+pip install git+https://github.com/yaojie-shen/Common-Utils.git@dev
 ```
 
 For local development:
@@ -24,18 +24,18 @@ For local development:
 pip install -e .
 ```
 
-Optional extras are available for some features:
+Install optional extras from a local checkout:
 
 ```bash
-pip install "dl-utils[ray]"      # Ray inference helpers
+pip install ".[ray]"      # Ray inference helpers
 ```
 
 ## Usage
 
-It is recommended to import most utilities directly from the top-level `dl_utils` package:
+It is recommended to import most utilities directly from the top-level `common_utils` package:
 
 ```python
-from dl_utils import save_json, load_json, inspect_data
+from common_utils import save_json, load_json, inspect_data
 
 data = {"name": "example", "items": [1, 2, 3]}
 
@@ -49,8 +49,8 @@ inspect_data(loaded)
 
 Detailed API documentation is maintained in the project docs rather than duplicated here:
 
-- Documentation home: <https://yaojie-shen.github.io/Deep-Learning-Utils/>
-- API reference: <https://yaojie-shen.github.io/Deep-Learning-Utils/api_reference.html>
+- Documentation home: <https://yaojie-shen.github.io/Common-Utils/>
+- API reference: <https://yaojie-shen.github.io/Common-Utils/api_reference.html>
 
 ## Development
 

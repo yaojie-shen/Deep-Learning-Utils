@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 9/12/25
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_global_cache_utils.py
 
 import gc
@@ -11,7 +11,7 @@ import time
 
 import pytest
 
-from dl_utils import GlobalCache
+from common_utils import GlobalCache
 
 
 @pytest.fixture(scope="function")

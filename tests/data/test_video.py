@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2022/9/25 14:42
 # @Author  : Yaojie Shen
-# @Project : Deep-Learning-Utils
+# @Project : Common-Utils
 # @File    : test_video.py
 
 from unittest.mock import MagicMock, patch
@@ -10,7 +10,7 @@ import numpy as np
 import torch
 from pytest import fixture
 
-from dl_utils import (
+from common_utils import (
     get_video_duration,
     get_video_duration_batch,
     load_video,
